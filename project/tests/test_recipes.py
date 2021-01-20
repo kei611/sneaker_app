@@ -34,8 +34,7 @@ class ProjectTests(unittest.TestCase):
  
     def test_main_page(self):
         response = self.app.get('/', follow_redirects=True)
-        self.assertIn(b'Welcome to the Sneaker App!', response.data)
-        self.assertIn(b'This site is sneaker shelf!', response.data)
+        self.assertIn(b'Sneaker Shelf', response.data)
         self.assertIn(b'Adidas', response.data)
         self.assertIn(b'Nike', response.data)
  

@@ -3,7 +3,7 @@
 #################
  
 from flask import render_template, Blueprint
- 
+from project.models import Sneaker
  
 ################
 #### config ####
@@ -18,4 +18,5 @@ sneakers_blueprint = Blueprint('sneakers', __name__, template_folder='templates'
  
 @sneakers_blueprint.route('/')
 def index():
-    return render_template('index.html')
+    all_sneaker = Sneaker.query.all()
+    return render_template('sneakers.html', sneakers=all_sneaker)
