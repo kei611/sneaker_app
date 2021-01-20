@@ -34,6 +34,7 @@
           <ul class="nav navbar-nav">
             <li><a href="#">Adidas</a></li>
             <li><a href="#">Nike</a></li>
+            <li><a href="{{ url_for('sneakers.add_sneaker') }}">Add Sneaker</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#">Welcome!</a></li>
@@ -44,6 +45,25 @@
 
     <div class="container">
         <div class="content">
+
+        <!-- flash messages -->
+        {% for error_message in get_flashed_messages(category_filter=["error"]) %}
+ 
+        <div class="alert alert-danger alert-dismissible">{{ error_message }}</div>
+ 
+        {% endfor %}
+ 
+        {% for success_message in get_flashed_messages(category_filter=["success"]) %}
+ 
+        <div class="alert alert-success alert-dismissible">{{ success_message }}</div>
+ 
+        {% endfor %}
+ 
+        {% for info_message in get_flashed_messages(category_filter=["info"]) %}
+ 
+        <div class="alert alert-info alert-dismissible">{{ info_message }}</div>
+ 
+        {% endfor %}
    
           <!-- child template -->
           {% block content %}
