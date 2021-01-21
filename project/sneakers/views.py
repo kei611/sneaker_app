@@ -12,7 +12,7 @@ from .forms import AddSneakerForm
 #### config ####
 ################
  
-sneakers_blueprint = Blueprint('sneakers', __name__, template_folder='templates')
+sneakers_blueprint = Blueprint('sneakers', __name__)
  
 ##########################
 #### helper functions ####
