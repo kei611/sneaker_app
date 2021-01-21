@@ -43,9 +43,8 @@ class ProjectTests(unittest.TestCase):
     def test_main_page(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertIn(b'Sneaker Shelf', response.data)
-        self.assertIn(b'Adidas', response.data)
-        self.assertIn(b'Nike', response.data)
-        self.assertIn(b'Add Sneaker', response.data)
+        self.assertIn(b'Register', response.data)
+        self.assertIn(b'Log In', response.data)
 
     def test_main_page_query_results(self):
         response = self.app.get('/add', follow_redirects=True)

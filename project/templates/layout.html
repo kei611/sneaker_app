@@ -20,7 +20,7 @@
 
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#recipes-navbar-collapse-1" aria-expanded="false">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sneakers-navbar-collapse-1" aria-expanded="false">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -31,12 +31,18 @@
    
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="sneakers-navbar-collapse-1">
+
           <ul class="nav navbar-nav">
-            <li><a href="#">Adidas</a></li>
-            <li><a href="#">Nike</a></li>
-            <li><a href="{{ url_for('sneakers.add_sneaker') }}">Add Sneaker</a></li>
-            <li><a href="{{ url_for('users.register') }}">Register</a></li>
+            {% if current_user.is_authenticated %}
+              <li><a href="{{ url_for('sneakers.index') }}">Public Recipes</a></li>
+              <li><a href="{{ url_for('sneakers.add_sneaker') }}">Add Recipe</a></li>
+              <li><a href="{{ url_for('users.logout') }}">Log Out</a></li>
+            {% else %}
+              <li><a href="{{ url_for('users.register') }}">Register</a></li>
+              <li><a href="{{ url_for('users.login') }}">Log In</a></li>
+            {% endif %}
           </ul>
+
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#">Welcome!</a></li>
           </ul>
