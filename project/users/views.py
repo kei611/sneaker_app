@@ -76,6 +76,8 @@ def register():
                 db.session.add(new_user)
                 db.session.commit()
 
+                login_user(new_user)
+
                 send_confirmation_email(new_user.email)
                 flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
                 return redirect(url_for('sneakers.index'))
@@ -85,6 +87,7 @@ def register():
                 flash('ERROR! Email ({}) already exists.'.format(form.email.data), 'error')
     return render_template('register.html', form=form)
 
+
 @users_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
@@ -93,6 +96,8 @@ def login():
             user = User.query.filter_by(email=form.email.data).first()
             if user is not None and user.is_correct_password(form.password.data):
                 user.authenticated = True
+                user.last_logged_in = user.current_logged_in
+                user.current_logged_in = datetime.now()
                 db.session.add(user)
                 db.session.commit()
                 login_user(user)
@@ -101,6 +106,7 @@ def login():
             else:
                 flash('ERROR! Incorrect login credentials.', 'error')
     return render_template('login.html', form=form)
+
 
 @users_blueprint.route('/logout')
 @login_required
@@ -135,6 +141,7 @@ def confirm_email(token):
         flash('Thank you for confirming your email address!')
  
     return redirect(url_for('sneakers.index'))
+
 
 @users_blueprint.route('/reset', methods=["GET", "POST"])
 def reset():
@@ -181,3 +188,11 @@ def reset_with_token(token):
         return redirect(url_for('users.login'))
  
     return render_template('reset_password_with_token.html', form=form, token=token)
+
+
+@users_blueprint.route('/user_profile')
+@login_required
+def user_profile():
+    return render_template('user_profile.html')
+
+    
