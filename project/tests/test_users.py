@@ -2,7 +2,7 @@
 import os
 import unittest
  
-from project import app, db
+from project import app, db, mail
 # from project.models import User
 
  
@@ -25,6 +25,7 @@ class UsersTests(unittest.TestCase):
         db.drop_all()
         db.create_all()
 
+        mail.init_app(app)
         self.assertEquals(app.debug, False)
  
     # executed after each test
