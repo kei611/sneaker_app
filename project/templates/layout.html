@@ -37,7 +37,10 @@
               <li><a href="{{ url_for('sneakers.index') }}">Public Recipes</a></li>
               <li><a href="{{ url_for('sneakers.add_sneaker') }}">Add Recipe</a></li>
               <li><a href="{{ url_for('users.logout') }}">Log Out</a></li>
-            {% else %}
+              {% if current_user.role == "admin" %}
+              <li><a href="{{ url_for('users.admin_view_users') }}">View Users (Admin)</a></li>
+              {% endif %}            
+              {% else %}
               <li><a href="{{ url_for('users.register') }}">Register</a></li>
               <li><a href="{{ url_for('users.login') }}">Log In</a></li>
             {% endif %}
