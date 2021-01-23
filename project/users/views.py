@@ -80,7 +80,7 @@ def register():
 
                 send_confirmation_email(new_user.email)
                 flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
-                return redirect(url_for('sneakers.index'))
+                return redirect(url_for('sneakers.user_sneakers'))
                 
             except IntegrityError:
                 db.session.rollback()
@@ -102,7 +102,7 @@ def login():
                 db.session.commit()
                 login_user(user)
                 flash('Welcome, {}!'.format(current_user.email), 'success')
-                return redirect(url_for('sneakers.index'))
+                return redirect(url_for('sneakers.user_sneakers'))
             else:
                 flash('ERROR! Incorrect login credentials.', 'error')
     return render_template('login.html', form=form)
@@ -140,7 +140,7 @@ def confirm_email(token):
         db.session.commit()
         flash('Thank you for confirming your email address!')
  
-    return redirect(url_for('sneakers.index'))
+    return redirect(url_for('sneakers.public_sneakers'))
 
 
 @users_blueprint.route('/reset', methods=["GET", "POST"])

@@ -10,11 +10,15 @@ class Sneaker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sneaker_model_name = db.Column(db.String, nullable=False)
     sneaker_retail_price = db.Column(db.Integer, nullable=False)
- 
-    def __init__(self, model_name, retail_price, image_filename=None, image_url=None):
+    is_public = db.Column(db.Boolean, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __init__(self, model_name, retail_price, user_id, is_public):
         self.sneaker_model_name = model_name
         self.sneaker_retail_price = retail_price
- 
+        self.is_public = is_public
+        self.user_id = user_id
+
     def __repr__ (self):
         return 'model_name {}'.format(self.name)
 
@@ -33,6 +37,7 @@ class User(db.Model):
     last_logged_in = db.Column(db.DateTime, nullable=True)
     current_logged_in = db.Column(db.DateTime, nullable=True)
     role = db.Column(db.String, default='user')
+    sneakers = db.relationship('Sneaker', backref='user', lazy='dynamic')
 
     def __init__(self, email, plaintext_password, email_confirmation_sent_on=None, role='user'):
         self.email = email

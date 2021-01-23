@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+ 
+<div class="user-profile">
+  <div class="page-header">
+    <h2>Public Sneakers</h2>
+  </div>
+ 
+  <table class="table table-striped" id="owned_stock_table">
+    <thead>
+      <tr>
+        <th>Sneaker Name</th>
+        <th>Retail Price</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for sneaker in public_sneakers %}
+      <tr>
+        <td>{{ sneaker.sneaker_model_name }}</td>
+        <td>{{ sneaker.sneaker_retail_price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+ 
+{% endblock %}
