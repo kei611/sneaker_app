@@ -133,7 +133,34 @@ class ProjectTests(unittest.TestCase):
             follow_redirects=True)
         self.assertIn(b'ERROR! Sneaker was not added.', response.data)
         self.assertIn(b'This field is required.', response.data)
- 
+
+    def test_sneaker_detail_public_sneaker(self):
+        self.register_user()
+        self.add_sneakers()
+        self.logout_user()
+        response = self.app.get('/sneaker/1', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Yeezy1', response.data)
+        self.assertIn(b'Public', response.data)
+        self.assertIn(b'patkennedy79@gmail.com', response.data)
+    
+    def test_sneaker_detail_private_sneaker(self):
+        self.register_user()
+        self.add_sneakers()
+        response = self.app.get('/sneaker/3', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Yeezy3', response.data)
+        self.assertIn(b'Private', response.data)
+        self.assertIn(b'patkennedy79@gmail.com', response.data)
+    
+    def test_sneaker_detail_private_sneaker_invalid_user(self):
+        self.register_user()
+        self.add_sneakers()
+        self.logout_user()
+        response = self.app.get('/sneaker/3', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Error! Incorrect permissions to access this sneaker.', response.data)
+
 
 if __name__ == "__main__":
     unittest.main()

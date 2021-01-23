@@ -16,7 +16,7 @@
     <tbody>
         {% for sneaker in public_sneakers %}
       <tr>
-        <td>{{ sneaker.sneaker_model_name }}</td>
+        <td><a href="{{ url_for('sneakers.sneaker_details', sneaker_id=sneaker.id) }}">{{ sneaker.sneaker_model_name }}</a></td>
         <td>{{ sneaker.sneaker_retail_price }}</td>
       </tr>
       {% endfor %}

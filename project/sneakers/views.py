@@ -5,7 +5,7 @@
 from flask import render_template, Blueprint, request, redirect, url_for, flash
 from flask_login import current_user, login_required
 from project import db
-from project.models import Sneaker
+from project.models import Sneaker, User
 from .forms import AddSneakerForm
 
  
@@ -61,3 +61,18 @@ def user_sneakers():
     all_user_sneakers = Sneaker.query.filter_by(user_id=current_user.id)
     return render_template('user_sneakers.html', user_sneakers=all_user_sneakers)
 
+
+@sneakers_blueprint.route('/sneaker/<sneaker_id>')
+def sneaker_details(sneaker_id):
+    sneaker_with_user = db.session.query(Sneaker, User).join(User).filter(Sneaker.id == sneaker_id).first()
+    if sneaker_with_user is not None:
+        if sneaker_with_user.Sneaker.is_public:
+            return render_template('sneaker_detail.html', sneaker=sneaker_with_user)
+        else:
+            if current_user.is_authenticated and sneaker_with_user.Sneaker.user_id == current_user.id:
+                return render_template('sneaker_detail.html', sneaker=sneaker_with_user)
+            else:
+                flash('Error! Incorrect permissions to access this sneaker.', 'error')
+    else:
+        flash('Error! Sneaker does not exist.', 'error')
+    return redirect(url_for('sneakers.public_sneakers'))
