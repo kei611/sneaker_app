@@ -11,12 +11,14 @@ class Sneaker(db.Model):
     sneaker_model_name = db.Column(db.String, nullable=False)
     sneaker_retail_price = db.Column(db.Integer, nullable=False)
     is_public = db.Column(db.Boolean, nullable=False)
+    inspiration = db.Column(db.String, default=None, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, model_name, retail_price, user_id, is_public):
+    def __init__(self, model_name, retail_price, user_id, is_public, inspiration=None,):
         self.sneaker_model_name = model_name
         self.sneaker_retail_price = retail_price
         self.is_public = is_public
+        self.inspiration = inspiration
         self.user_id = user_id
 
     def __repr__ (self):
