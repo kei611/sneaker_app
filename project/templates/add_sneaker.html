@@ -13,12 +13,12 @@
  
  
  
-<form action="{{ url_for('sneakers.add_sneaker') }}" method="post">
+<form action="{{ url_for('sneakers.add_sneaker') }}" method="post" enctype="multipart/form-data">
     {{ form.csrf_token }}
 <dl>
     {{ render_field(form.sneaker_model_name, placeholder="Sneaker Name") }}
-
     {{ render_field(form.sneaker_retail_price, placeholder="Retail Price") }}
+    {{ render_field(form.sneaker_image) }}
 </dl>
     <button class="btn btn-sm btn-success" type="submit">Add Sneaker</button>
   </form>

@@ -25,6 +25,10 @@
       <div class="panel-heading">User</div>
       <div class="panel-body">{{ sneaker.User.email }}</div>
     </div>
+
+    {% if sneaker.Sneaker.image_url %}
+      <img src="{{ sneaker.Sneaker.image_url }}" alt="{{ sneaker.Sneaker.image_filename }}" style="width:600px;height:450px;">
+    {% endif %}
  
   </div>
 </div>`

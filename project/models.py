@@ -11,18 +11,22 @@ class Sneaker(db.Model):
     sneaker_model_name = db.Column(db.String, nullable=False)
     sneaker_retail_price = db.Column(db.Integer, nullable=False)
     is_public = db.Column(db.Boolean, nullable=False)
+    image_filename = db.Column(db.String, default=None, nullable=True)
+    image_url = db.Column(db.String, default=None, nullable=True)
     inspiration = db.Column(db.String, default=None, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, model_name, retail_price, user_id, is_public, inspiration=None,):
+    def __init__(self, model_name, retail_price, user_id, is_public, inspiration=None, image_filename=None, image_url=None):
         self.sneaker_model_name = model_name
         self.sneaker_retail_price = retail_price
         self.is_public = is_public
         self.inspiration = inspiration
+        self.image_filename = image_filename
+        self.image_url = image_url
         self.user_id = user_id
 
-    def __repr__ (self):
-        return 'model_name {}'.format(self.name)
+    def __repr__(self):
+        return '<id: {}, title: {}, user_id: {}>'.format(self.id, self.recipe_title, self.user_id)
 
 
 class User(db.Model):
