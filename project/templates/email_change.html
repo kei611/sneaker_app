@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "_form_macros.html" import render_field %}
+{% from "_form_macros.html" import render_field_without_label %}
  
 {% block content %}
  
@@ -13,7 +13,7 @@
   <form action="{{ url_for('users.user_email_change') }}" method="post">
   {{ form.csrf_token }}
     <dl>
-      {{ render_field(form.email, placeholder="Enter New Email Address") }}
+      {{ render_field_without_label(form.email, placeholder="Enter New Email Address") }}
     </dl>
     <button class="btn btn-sm btn-success" type="submit">Update</button>
   </form>

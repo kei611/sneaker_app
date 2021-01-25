@@ -3,25 +3,37 @@
 
 <div class="user-profile">
   <div class="page-header">
-    <h2>User Recipes</h2>
+    <h2>My Sneakers</h2>
   </div>
 
-  <table class="table table-striped" id="owned_stock_table">
-    <thead>
-      <tr>
-        <th>Sneaker Name</th>
-        <th>Retail Price</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for sneaker in user_sneakers %}
-      <tr>
-        <td><a href="{{ url_for('sneakers.sneaker_details', sneaker_id=sneaker.id) }}">{{ sneaker.sneaker_model_name }}</a></td>
-        <td>{{ sneaker.sneaker_retail_price }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="container">
+    {% if user_sneakers.count() == 0 %}
+      <h5>No sneakers have been created!</h5>
+    {% else %}
+      <ul class="media-list">
+        {% for sneaker in user_sneakers %}
+          <li class="media">
+            <div class="media-left">
+              <a class="media-left" href="{{ url_for('sneakers.sneaker_details', sneaker_id=sneaker.id) }}">
+                <img class="media-object" src="{{ sneaker.image_url }}" alt="{{ sneaker.image_filename }}" style="width:64;height:64px;">
+              </a>
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading">
+                <a href="{{ url_for('sneakers.sneaker_details', sneaker_id=sneaker.id) }}">{{ sneaker.sneaker_model_name }}</a>
+
+              </h4>
+              {{ sneaker.sneaker_retail_price }} JPY
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+
+
+
+
 </div>
 
 {% endblock %}

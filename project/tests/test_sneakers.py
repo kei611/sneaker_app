@@ -1,6 +1,7 @@
 
 import os
 import unittest
+from io import BytesIO
  
 from project import app, db
 from project.models import User, Sneaker
@@ -30,6 +31,7 @@ class ProjectTests(unittest.TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        
  
  
     ########################
@@ -53,25 +55,37 @@ class ProjectTests(unittest.TestCase):
     def register_user(self):
         self.app.get('/register', follow_redirects=True)
         self.register('patkennedy79@gmail.com', 'FlaskIsAwesome', 'FlaskIsAwesome')
-    
+
+    def register_user2(self):
+        self.app.get('/register', follow_redirects=True)
+        self.register('stockwatchlistapp@gmail.com', 'FlaskIsGreat', 'FlaskIsGreat')
+
     def login_user(self):
         self.app.get('/login', follow_redirects=True)
         self.login('patkennedy79@gmail.com', 'FlaskIsAwesome')
-    
+
+    def login_user2(self):
+        self.app.get('/login', follow_redirects=True)
+        self.login('stockwatchlistapp@gmail.com', 'FlaskIsGreat')
+
     def logout_user(self):
         self.app.get('/logout', follow_redirects=True)
     
     def add_sneakers(self):
         self.register_user()
+        self.register_user2()
         user1 = User.query.filter_by(email='patkennedy79@gmail.com').first()
+        user2 = User.query.filter_by(email='stockwatchlistapp@gmail.com').first()
         sneaker1 = Sneaker('Yeezy1', 10000, user1.id, True)
         sneaker2 = Sneaker('Yeezy2', 12000, user1.id, True)
         sneaker3 = Sneaker('Yeezy3', 15000, user1.id, False)
         sneaker4 = Sneaker('Yeezy4', 18000, user1.id, False)
+        sneaker5 = Sneaker('Yeezy5', 20000, user2.id, False)
         db.session.add(sneaker1)
         db.session.add(sneaker2)
         db.session.add(sneaker3)
         db.session.add(sneaker4)
+        db.session.add(sneaker5)
         db.session.commit()
     
  
@@ -89,19 +103,6 @@ class ProjectTests(unittest.TestCase):
         self.assertIn(b'Register', response.data)
         self.assertIn(b'Yeezy1', response.data)
         self.assertIn(b'Yeezy2', response.data)
-        # self.assertIn(b'Yeezy3', response.data)
-        # self.assertIn(b'Yeezy4', response.data)
-
-    def test_user_sneakers_page(self):
-        self.register_user()
-        self.add_sneakers()
-        response = self.app.get('/sneakers', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Sneaker Shelf', response.data)
-        self.assertIn(b'Yeezy1', response.data)
-        self.assertIn(b'Yeezy2', response.data)
-        self.assertIn(b'Yeezy3', response.data)
-        self.assertIn(b'Yeezy4', response.data)
 
     def test_user_sneakers_page_without_login(self):
         response = self.app.get('/sneakers', follow_redirects=False)
@@ -119,17 +120,20 @@ class ProjectTests(unittest.TestCase):
         self.register_user()
         response = self.app.post(
             '/add',
-            data=dict(sneaker_model_name='Yeezy',
-                      sneaker_retail_price=15000),
+            data={'sneaker_model_name': 'Yeezy', 
+            'sneaker_retail_price': 15000, 
+            'sneaker_image': (BytesIO(b'my file contents'), 'image001.jpg')},
             follow_redirects=True)
         self.assertIn(b'New sneaker, Yeezy, added!', response.data)
  
     def test_add_invalid_sneaker(self):
         self.register_user()
+        self.login_user()
         response = self.app.post(
             '/add',
-            data=dict(sneaker_model_name='Yeezy',
-                      sneaker_retail_price='Delicious'),
+            data={'sneaker_model_name': 'Yeezy', 
+            'sneaker_retail_price': 'Delicious', 
+            'sneaker_image': (BytesIO(b'my file contents'), 'image001.jpg')},
             follow_redirects=True)
         self.assertIn(b'ERROR! Sneaker was not added.', response.data)
         self.assertIn(b'This field is required.', response.data)
@@ -142,11 +146,11 @@ class ProjectTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Yeezy1', response.data)
         self.assertIn(b'Public', response.data)
-        self.assertIn(b'patkennedy79@gmail.com', response.data)
     
     def test_sneaker_detail_private_sneaker(self):
-        self.register_user()
+        # self.register_user()
         self.add_sneakers()
+        self.login_user()
         response = self.app.get('/sneaker/3', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Yeezy3', response.data)
@@ -160,6 +164,62 @@ class ProjectTests(unittest.TestCase):
         response = self.app.get('/sneaker/3', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Error! Incorrect permissions to access this sneaker.', response.data)
+
+    def test_sneaker_edit_valid_user(self):
+        self.add_sneakers()
+        self.login_user()
+        response = self.app.get('/edit/2', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Yeezy2', response.data)
+        self.assertIn(b'Public', response.data)
+        self.assertIn(b'patkennedy79@gmail.com', response.data)
+
+    def test_sneaker_edit_invalid_user(self):
+        self.add_sneakers()
+        self.login_user2()
+        response = self.app.get('/edit/2', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Error! Incorrect permissions to edit this sneaker.', response.data)
+
+    def test_sneaker_edit_invalid_sneaker(self):
+        self.add_sneakers()
+        response = self.app.get('/edit/17', follow_redirects=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_sneaker_delete_valid_user(self):
+        self.add_sneakers()
+        self.login_user()
+        response = self.app.get('/delete/4', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Yeezy4 was deleted.', response.data)
+
+    def test_sneaker_delete_invalid_user(self):
+        self.add_sneakers()
+        self.login_user2()
+        response = self.app.get('/delete/4', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Error! Incorrect permissions to delete this sneaker.', response.data)
+
+    def test_sneaker_delete_invalid_sneaker(self):
+        self.add_sneakers()
+        response = self.app.get('/delete/234', follow_redirects=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_edit_sneaker_fields(self):
+        self.add_sneakers()
+        self.app.post('/login',
+                data=dict(email='patkennedy79@gmail.com', password='FlaskIsAwesome'),
+                follow_redirects=True)
+        response = self.app.get('/edit/3', follow_redirects=True)
+        self.assertIn(b'Edit Sneaker', response.data)
+        self.assertIn(b'Yeezy3', response.data)
+        response = self.app.post(
+            '/edit/3',
+            data={'sneaker_model_name': 'Yeezy new', 
+            'sneaker_retail_price': 15000, 
+            'sneaker_image': (BytesIO(b'my file contents'), 'image001.jpg')},
+            follow_redirects=True)
+        self.assertIn(b'Sneaker has been updated for Yeezy new.', response.data)
 
 
 if __name__ == "__main__":
