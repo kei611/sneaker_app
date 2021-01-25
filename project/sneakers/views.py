@@ -6,12 +6,17 @@ from flask import render_template, Blueprint, request, redirect, url_for, flash
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 import os
+import pickle
 
 from project import db, app
 from project.models import Sneaker, User
 from .forms import AddSneakerForm, EditSneakerForm
+from .vectorizer import concat_features
 
- 
+
+cur_dir = os.path.dirname(__file__)
+clf5 = pickle.load(open(os.path.join(cur_dir, 'objects', 'classifier5.pkl'), 'rb'))
+
 ################
 #### config ####
 ################
@@ -19,6 +24,7 @@ from .forms import AddSneakerForm, EditSneakerForm
 sneakers_blueprint = Blueprint('sneakers', __name__)
  
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
 ##########################
 #### helper functions ####
 ##########################
@@ -34,7 +40,36 @@ def flash_errors(form):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
- 
+
+
+def classify(retail_price, img_name, text):
+
+    X = concat_features(retail_price, img_name, text)
+    y = clf5.predict(X)
+    proba = clf5.predict_proba(X).max()
+
+    if y == 'lv0':
+        price_min = retail_price - 10000
+        pred = 'Less than {} JPY'.format(price_min)
+    elif y == 'lv1':
+        price_min = retail_price - 10000
+        price_max = retail_price - 2500
+        pred = '{} - {} JPY'.format(price_min, price_max)
+    elif y == 'lv2':
+        price_min = retail_price - 2500
+        price_max = retail_price + 2500
+        pred = '{} - {} JPY'.format(price_min, price_max)
+    elif y == 'lv3':
+        price_min = retail_price + 2500
+        price_max = retail_price + 10000
+        pred = '{} - {} JPY'.format(price_min, price_max)
+    elif y == 'lv4':
+        price_max = retail_price + 10000
+        pred = 'More than {} JPY'.format(price_max)
+
+    return pred, proba
+
+
 ################
 #### routes ####
 ################
@@ -240,3 +275,66 @@ def admin_view_sneakers():
         sneakers = Sneaker.query.order_by(Sneaker.id).all()
         return render_template('admin_view_sneakers.html', sneakers=sneakers)
     return redirect(url_for('users.login'))
+
+
+
+#POST method is to allow the user to submit the form data
+#GET method is to allow the user to receive the form
+@sneakers_blueprint.route('/pred', methods=['GET', 'POST'])
+def pred_price():
+    # Cannot pass in 'request.form' to AddSneakerForm constructor, as this will cause 'request.files' to not be
+    # sent to the form.  This will cause AddSneakerForm to not see the file data.
+    # Flask-WTF handles passing form data to the form, so not parameters need to be included.
+    form = AddSneakerForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            # check if the post request has the recipe_image part
+            if 'sneaker_image' not in request.files:
+                flash('No sneaker image provided!')
+                return redirect(request.url)
+
+            file = request.files['sneaker_image']
+
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+
+            if not file:
+                flash('File is empty!')
+                return redirect(request.url)
+
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(app.config['UPLOADS_DEFAULT_DEST'], filename)
+                file.save(filepath)
+                url = os.path.join(app.config['UPLOADS_DEFAULT_URL'], filename)
+            else:
+                filename = ''
+                url = ''
+
+            name = form.sneaker_model_name.data
+            price = form.sneaker_retail_price.data
+
+            # new_sneaker = Sneaker(name, 
+            # price, 
+            # filename, 
+            # url)
+
+            # db.session.add(new_sneaker)
+            # db.session.commit()
+            # flash('New sneaker, {}, added!'.format(new_sneaker.sneaker_model_name), 'success')
+            
+            pred, proba = classify(price, filepath, name)
+            
+            return render_template('results.html', 
+            content_name=name, 
+            content_price=price,
+            prediction=pred, 
+            probability=round(proba*100, 2))
+
+        else:
+            flash_errors(form)
+            flash('ERROR! Sneaker was not added.', 'error')
+        
+    return render_template('pred_price.html', form=form)
+

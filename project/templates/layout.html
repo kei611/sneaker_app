@@ -37,6 +37,7 @@
               <li><a href="{{ url_for('sneakers.user_sneakers') }}">My Sneakers</a></li>
               <li><a href="{{ url_for('sneakers.add_sneaker') }}">Add Sneakers</a></li>
               <li><a href="{{ url_for('users.logout') }}">Log Out</a></li>
+
               {% if current_user.role == "admin" %}
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin<span class="caret"></span></a>
@@ -51,6 +52,7 @@
               <li><a href="{{ url_for('users.register') }}">Register</a></li>
               <li><a href="{{ url_for('users.login') }}">Log In</a></li>
             {% endif %}
+            <li><a href="{{ url_for('sneakers.pred_price') }}">Price Predicter</a></li>
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
