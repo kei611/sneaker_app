@@ -3,11 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
  
-# Mac custom attributes file (Desktop Service Store)
-.DS_Store
- 
-# PyCharm files
-.idea/
- 
 # Instance Folder - used for configuration parameters
 /instance
+
+# Initialization file for Postgress Docker Image
+/postgresql/Dockerfile
+
+# Coverage output
+/web/.coverage
+/web/htmlcov/
