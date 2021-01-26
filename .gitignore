@@ -4,8 +4,8 @@ __pycache__/
 *$py.class
  
 # Instance Folder - used for configuration parameters
-/instance/db_create.py
-/instance/flask.cfg
+/web/instance/db_create.py
+/web/instance/flask.cfg
 /web/instance/*.db
 
 # Initialization file for Postgress Docker Image
