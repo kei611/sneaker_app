@@ -10,7 +10,7 @@ import pickle
 
 from project import db, app
 from project.models import Sneaker, User
-from .forms import AddSneakerForm, EditSneakerForm
+from .forms import AddSneakerForm, EditSneakerForm, PredPriceForm
 from .vectorizer import concat_features
 
 
@@ -285,7 +285,7 @@ def pred_price():
     # Cannot pass in 'request.form' to AddSneakerForm constructor, as this will cause 'request.files' to not be
     # sent to the form.  This will cause AddSneakerForm to not see the file data.
     # Flask-WTF handles passing form data to the form, so not parameters need to be included.
-    form = AddSneakerForm()
+    form = PredPriceForm()
     if request.method == 'POST':
         if form.validate_on_submit():
             # check if the post request has the recipe_image part

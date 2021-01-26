@@ -29,29 +29,6 @@ class Sneaker(db.Model):
     def __repr__(self):
         return '<id: {}, title: {}, user_id: {}>'.format(self.id, self.recipe_title, self.user_id)
 
-    # def import_data(self, request):
-    #     """Import the data for this recipe by either saving the image associated
-    #     with this recipe or saving the metadata associated with the recipe. If
-    #     the metadata is being processed, the title and description of the recipe
-    #     must always be specified."""
-    #     try:
-    #         if 'sneaker_image' in request.files:
-    #             file = request.files['sneaker_image']
-    #             filename = secure_filename(file.filename)
-    #             file.save(os.path.join(app.config['UPLOADS_DEFAULT_DEST'], filename))
-    #             url = os.path.join(app.config['UPLOADS_DEFAULT_URL'], filename)
-    #             self.image_filename = filename
-    #             self.image_url = url
-    #         else:
-    #             json_data = request.get_json()
-    #             self.sneaker_model_name = json_data['model_name']
-    #             self.sneaker_retail_price = json_data['retail_price']
-
-    #     except KeyError as e:
-    #         raise ValidationError('Invalid sneaker: missing ' + e.args[0])
-    #     return self
-
-
     def import_form_data(self, request, form):
         """Import the data for this sneaker that was input via the EditSneakerForm
         class.  This can either be done by the user for the sneakers that they own
