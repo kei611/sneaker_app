@@ -2,9 +2,6 @@
 
 Sneaker Shelf web application for keeping track of your favorite sneakers.
 
-## Website
-http://www.kennedyfamilyrecipes.com
-
 ## What Does This Tool Do?
 Keeps track of all your sneakers.
 
