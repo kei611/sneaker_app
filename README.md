@@ -1,46 +1,49 @@
-## Synopsis
+## 概要
 
-Sneaker Shelf web application for keeping track of your favorite sneakers.
+自分が持っているスニーカーを記録するバーチャルスニーカーラック. StockXのデータから機械学習を用いたスニーカーのリセール価格予測機能も持つ. 
 
-## What Does This Tool Do?
-Keeps track of all your sneakers.
+## 動かし方
 
-## How to Run (Development)
-
-1. Create the Dockerfile for the postgres service
+1. postgresのdockerfileを作成
 
 - % cd ./sneaker_project/web/
 - % python create_postgres_dockerfile.py
 - % cd ..
 
-2. Build and run the Docker containers
+2. Docker containersをビルドして実行
 
 - % docker-compose build
 - % docker-compose up -d
 
-3. Create or re-initialize the database
+3. データベースの作成と初期化
 
 - % docker-compose run --rm web python ./instance/db_create.py
 
-Go to your favorite web browser and open:
+ウェブブラウザで開く:
     localhost:80
 
-## Key Python Modules Used
-
-- Flask - web framework
-- Jinga2 - templating engine
+## 使用した主なモジュール
+### web app
+- Flask - ウェブフレームワーク
+- Jinga2 - テンプレートエンジン
 - SQLAlchemy - ORM (Object Relational Mapper)
-- Flask-Bcrypt - password hashing
-- Flask-Login - support for user management
-- Flask-Migrate - database migrations
-- Flask-WTF - simplifies forms
-- itsdangerous - helps with user management, especially tokens
+- Flask-Bcrypt - パスワードのハッシュ化
+- Flask-Login - ユーザーマネジメントのサポート
+- Flask-Migrate - データベースの移行
+- Flask-WTF - フォーム作成
+- itsdangerous - ユーザーマネジメント、トークン化
 
-This application is written using Python 3.8.0.  The database used is PostgreSQL.
+### machine learning
+- Beautiful Soup - スクレイピング
+- Selenium - スクレイピング
+- Xception(keras) - 画像の特徴量抽出器. imagenetで学習済み
+- 文字レベルCNN(keras) - テキストの特徴量抽出器
+- PCA(scikit-learn) - 次元削減
+- Xgboost - リセール価格の分類モデル
 
-Docker is the recommended tool for running in development and production.
+Python 3.8.0.を使用. データベースにはPostgreSQLを使用. Dockerによるコンテナ型仮想化. 
 
 ## Unit Testing
 
-In the top-level folder:
+最上位のディレクトリに移動:
     % nose2
